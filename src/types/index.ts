@@ -8,3 +8,9 @@ export interface Match {
   kick_off: string;
   status: string;
 }
+export interface Prediction {
+  id?: number;
+  user_id: string;
+  match_id: number;
+  outcome: "1" | "X" | "2";
+}
