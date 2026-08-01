@@ -9,7 +9,7 @@ export default async function Home() {
   const { data: matches, error } = await supabase
     .from("matches")
     .select("*")
-    .eq("gameweek_id", 2)
+    .eq("gameweek_id", 1)
     .order("kick_off", { ascending: true });
 
   const {
