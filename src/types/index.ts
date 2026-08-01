@@ -7,6 +7,7 @@ export interface Match {
   away_logo: string;
   kick_off: string;
   status: string;
+  gameweek_id: number;
 }
 export interface Prediction {
   id?: number;
