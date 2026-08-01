@@ -23,7 +23,7 @@ export default function MatchCard({
   const [isSaving, setIsSaving] = useState(false);
 
   const kickOffDate = new Date(match.kick_off);
-  const now = new Date("2024-07-17T15:00:00Z"); //hårdkodadat för testning
+  const now = new Date("2025-07-17T15:00:00Z"); //hårdkodadat för testning
   const hasStarted = now >= kickOffDate;
 
   const formattedTime = kickOffDate.toLocaleTimeString("sv-SE", {

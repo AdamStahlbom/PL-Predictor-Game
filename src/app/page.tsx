@@ -4,22 +4,18 @@ import { Match, Prediction } from "@/types";
 import MatchCard from "@/components/MatchCard";
 
 export default async function Home() {
-  // Skapa server-klienten som kan läsa cookies
   const supabase = await createClient();
 
-  // 1. Hämta matcher för Omgång 1
   const { data: matches, error } = await supabase
     .from("matches")
     .select("*")
-    .eq("gameweek_id", 1)
+    .eq("gameweek_id", 2)
     .order("kick_off", { ascending: true });
 
-  // 2. Hämta inloggad användare från cookien
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // 3. Om inloggad, hämta användarens tips
   let userPredictions: Record<number, Prediction> = {};
 
   if (user) {
