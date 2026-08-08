@@ -51,10 +51,28 @@ export default function Navbar() {
         </Link>
 
         {userName && (
-          <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none">
-            <span className="text-sm font-semibold text-gray-800 tracking-wide truncate max-w-[140px] sm:max-w-[220px] block text-center">
-              {userName}
-            </span>
+          <div className="absolute left-1/2 -translate-x-1/2 z-20">
+            <Link
+              href="/profile"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl hover:bg-gray-100 active:scale-95 transition-all group"
+            >
+              <span className="text-sm font-bold text-gray-800 tracking-wide truncate max-w-[140px] sm:max-w-[220px] block text-center group-hover:text-blue-600 transition-colors">
+                {userName}
+              </span>
+              <svg
+                className="w-3.5 h-3.5 text-gray-400 group-hover:text-blue-600 transition-colors"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </Link>
           </div>
         )}
 

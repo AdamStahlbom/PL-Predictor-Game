@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 
 interface GameweekPickerProps {
   currentGameweek: number;
+  onChange?: (newGameweek: number) => void;
 }
 
 export default function GameweekPicker({
   currentGameweek,
+  onChange,
 }: GameweekPickerProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -16,7 +18,12 @@ export default function GameweekPicker({
 
   const handleGameweekChange = (newGameweek: number) => {
     setIsOpen(false);
-    router.push(`/?gw=${newGameweek}`);
+
+    if (onChange) {
+      onChange(newGameweek);
+    } else {
+      router.push(`/?gw=${newGameweek}`);
+    }
   };
 
   useEffect(() => {
@@ -33,7 +40,7 @@ export default function GameweekPicker({
   }, []);
 
   return (
-    <div className="flex items-center justify-between bg-white p-2 sm:p-3 rounded-2xl shadow-sm border border-gray-100 mb-6">
+    <div className="flex items-center justify-between bg-white p-2 sm:p-3 rounded-2xl shadow-sm border border-gray-100">
       <button
         onClick={() => handleGameweekChange(Math.max(1, currentGameweek - 1))}
         disabled={currentGameweek === 1}
