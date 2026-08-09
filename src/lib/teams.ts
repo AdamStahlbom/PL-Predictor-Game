@@ -45,13 +45,13 @@ export const PREMIER_LEAGUE_TEAMS: Team[] = [
     id: 7,
     name: "Coventry City",
     logo_url:
-      "https://resources.premierleague.com/premierleague/badges/70/t5.png",
+      "https://images.fotmob.com/image_resources/logo/teamlogo/8669.png",
   },
   {
     id: 8,
     name: "Crystal Palace",
     logo_url:
-      "https://resources.premierleague.com/premierleague/badges/70/t92.png",
+      "https://images.fotmob.com/image_resources/logo/teamlogo/9826.png",
   },
   {
     id: 9,
@@ -123,6 +123,6 @@ export const PREMIER_LEAGUE_TEAMS: Team[] = [
     id: 20,
     name: "Tottenham Hotspur",
     logo_url:
-      "https://images.fotmob.com/image_resources/logo/teamlogo/8472.png",
+      "https://resources.premierleague.com/premierleague/badges/70/t6.png",
   },
 ];
