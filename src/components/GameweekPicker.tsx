@@ -40,7 +40,7 @@ export default function GameweekPicker({
   }, []);
 
   return (
-    <div className="flex items-center justify-between bg-white p-2 sm:p-3 rounded-2xl shadow-sm border border-gray-100">
+    <div className="flex items-center justify-between mb-1 bg-white p-2 sm:p-3 rounded-2xl shadow-sm border border-gray-100">
       <button
         onClick={() => handleGameweekChange(Math.max(1, currentGameweek - 1))}
         disabled={currentGameweek === 1}

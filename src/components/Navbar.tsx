@@ -105,6 +105,15 @@ export default function Navbar() {
 
                 <MenuItem>
                   <Link
+                    href="/profile"
+                    className="flex w-full items-center px-3 py-2.5 text-sm font-bold rounded-xl transition-colors text-gray-700 data-[focus]:bg-gray-50 data-[focus]:text-blue-600"
+                  >
+                    👤 Min Profil
+                  </Link>
+                </MenuItem>
+
+                <MenuItem>
+                  <Link
                     href="/"
                     className="flex w-full items-center px-3 py-2.5 text-sm font-bold rounded-xl transition-colors text-gray-700 data-[focus]:bg-gray-50 data-[focus]:text-blue-600"
                   >
