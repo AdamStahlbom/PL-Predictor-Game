@@ -18,11 +18,8 @@ export default async function ProfilePage() {
     .select("*")
     .eq("id", user.id)
     .single();
-  const pointsPromise = supabase
-    .from("leaderboard")
-    .select("total_points")
-    .eq("user_id", user.id)
-    .single();
+
+  const pointsPromise = supabase.rpc("get_leaderboard", { filter_mode: "all" });
 
   const [{ data: profile }, { data: leaderboard }] = await Promise.all([
     profilePromise,
@@ -31,7 +28,9 @@ export default async function ProfilePage() {
 
   const nameToShow =
     profile?.display_name || profile?.full_name || "Ny Spelare";
-  const totalPoints = leaderboard?.total_points || 0;
+
+  const userRank = leaderboard?.find((row: any) => row.user_id === user.id);
+  const totalPoints = userRank?.total_points || 0;
 
   return (
     <main className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6">
@@ -40,7 +39,7 @@ export default async function ProfilePage() {
           href="/"
           className="inline-flex items-center text-sm font-semibold text-gray-500 hover:text-gray-900 transition-colors"
         >
-          &larr; Tillbaka till spelschemat
+          &larr;
         </Link>
 
         <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-8 text-white shadow-lg relative overflow-hidden">
