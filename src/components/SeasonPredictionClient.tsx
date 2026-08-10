@@ -70,7 +70,7 @@ export default function SeasonPredictionClient({
           <SeasonPredictionTable
             userId={userId}
             initialTeams={myTeams}
-            isLocked={isLocked || hasSubmittedBefore}
+            isLocked={isLocked}
           />
         </div>
       )}

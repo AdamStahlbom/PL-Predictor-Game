@@ -43,38 +43,31 @@ export default function SeasonPredictionTable({
   const handleSave = async () => {
     if (isLocked) return;
 
-    const confirmSave = window.confirm(
-      "Är du helt säker på din tabell?\n\nNär du väl klickar OK sparas tabellen och du kommer inte att kunna ändra dina tips igen!",
-    );
-
-    if (!confirmSave) {
-      return;
-    }
-
     setIsSaving(true);
     setMessage("Sparar...");
 
     try {
-      const { error: deleteError } = await supabase
-        .from("season_predictions")
-        .delete()
-        .eq("user_id", userId);
-
-      if (deleteError) throw deleteError;
-
       const payload = teams.map((team, index) => ({
         user_id: userId,
         team_id: team.id,
         position: index + 1,
       }));
 
-      const { error: insertError } = await supabase
+      const { error: upsertError } = await supabase
         .from("season_predictions")
-        .insert(payload);
+        .upsert(payload, {
+          onConflict: "user_id, team_id",
+        });
 
-      if (insertError) throw insertError;
+      if (upsertError) throw upsertError;
 
-      setMessage("✅ Din säsongstabell är sparad och låst!");
+      setMessage(
+        "✅ Din tabell är sparad! Du kan ändra den fram till deadline.",
+      );
+
+      setTimeout(() => {
+        setMessage("");
+      }, 4000);
     } catch (error) {
       console.error(error);
       setMessage("❌ Kunde inte spara din tabell.");
