@@ -30,59 +30,24 @@ export default async function LeaderboardPage({
   const filter = params.filter || "all";
   const gw = params.gw ? parseInt(params.gw) : 1;
 
-  const { data: profiles } = await supabase.from("profiles").select("*");
-
-  let query = supabase
-    .from("predictions")
-    .select(
-      `
-      user_id, 
-      outcome,
-      matches!inner(status, gameweek_id, kick_off, home_score, away_score)
-    `,
-    )
-    .eq("matches.status", "FINISHED");
-
-  if (filter === "gw") {
-    query = query.eq("matches.gameweek_id", gw);
-  } else if (filter === "month") {
+  let startDate = new Date().toISOString();
+  if (filter === "month") {
     const oneMonthAgo = new Date();
     oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-    query = query.gte("matches.kick_off", oneMonthAgo.toISOString());
+    startDate = oneMonthAgo.toISOString();
   }
 
-  const { data: predictions, error } = await query;
-  if (error) console.error("Kunde inte hämta filtrerad data:", error);
-
-  const board = new Map();
-
-  // Ge alla 0 poäng som start
-  profiles?.forEach((p) => {
-    board.set(p.id, {
-      user_id: p.id,
-      display_name: p.display_name,
-      full_name: p.full_name,
-      avatar_url: p.avatar_url,
-      total_points: 0,
-    });
+  const { data: leaderboard, error } = await supabase.rpc("get_leaderboard", {
+    filter_mode: filter,
+    gw_id: gw,
+    start_date: startDate,
   });
 
-  predictions?.forEach((p: any) => {
-    const m = p.matches;
-    let correct = null;
+  if (error) {
+    console.error("Kunde inte hämta filtrerad data:", error);
+  }
 
-    if (m.home_score > m.away_score) correct = "1";
-    else if (m.home_score === m.away_score) correct = "X";
-    else if (m.home_score < m.away_score) correct = "2";
-
-    if (p.outcome === correct && board.has(p.user_id)) {
-      board.get(p.user_id).total_points += 1;
-    }
-  });
-
-  const leaderboard = Array.from(board.values()).sort(
-    (a, b) => b.total_points - a.total_points,
-  );
+  const safeLeaderboard = leaderboard || [];
 
   return (
     <main className="min-h-screen bg-[#F8FAFC] py-8 px-4 sm:px-6">
@@ -109,14 +74,14 @@ export default async function LeaderboardPage({
         <LeaderboardFilter />
 
         <div className="space-y-3">
-          {leaderboard.length === 0 ? (
+          {safeLeaderboard.length === 0 ? (
             <div className="bg-white p-10 rounded-3xl border border-gray-100 text-center shadow-sm">
               <p className="text-gray-500 mt-1">
                 Inga spelare hittades i databasen ännu.
               </p>
             </div>
           ) : (
-            leaderboard.map((row, index) => {
+            safeLeaderboard.map((row: any, index: number) => {
               const nameToShow =
                 row.display_name ||
                 row.full_name ||
