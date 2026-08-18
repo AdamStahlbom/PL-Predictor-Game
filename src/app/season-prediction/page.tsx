@@ -16,7 +16,7 @@ export default async function SeasonPredictionPage() {
     redirect("/login");
   }
 
-  const LOCK_DATE = new Date("2026-08-14T17:00:00Z");
+  const LOCK_DATE = new Date("2026-08-21T17:00:00Z");
   const isLocked = new Date() > LOCK_DATE;
 
   const { data: allPredictions } = await supabase
