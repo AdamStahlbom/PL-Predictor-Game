@@ -9,22 +9,29 @@ export default async function MatchList({
 }) {
   const supabase = await createClient();
 
-  const userPromise = supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   const matchesPromise = supabase
     .from("matches")
     .select("*")
     .eq("gameweek_id", currentGameweek)
     .order("kick_off", { ascending: true });
 
-  const [
-    {
-      data: { user },
-    },
-    { data: matches, error },
-  ] = await Promise.all([userPromise, matchesPromise]);
+  const predictionsPromise = user
+    ? supabase
+        .from("predictions")
+        .select("*, matches!inner(gameweek_id)")
+        .eq("user_id", user.id)
+        .eq("matches.gameweek_id", currentGameweek)
+    : Promise.resolve({ data: null, error: null });
 
-  if (error) {
-    console.error("Kunde inte hämta matcher:", error);
+  const [{ data: matches, error: matchesError }, { data: predictions }] =
+    await Promise.all([matchesPromise, predictionsPromise]);
+
+  if (matchesError) {
+    console.error("Kunde inte hämta matcher:", matchesError);
     return (
       <div className="p-8 text-red-500 text-center">
         Kunde inte ladda spelschemat.
@@ -34,24 +41,14 @@ export default async function MatchList({
 
   let userPredictions: Record<number, Prediction> = {};
 
-  if (user && matches && matches.length > 0) {
-    const matchIds = matches.map((m) => m.id);
-
-    const { data: predictions } = await supabase
-      .from("predictions")
-      .select("*")
-      .eq("user_id", user.id)
-      .in("match_id", matchIds);
-
-    if (predictions) {
-      userPredictions = predictions.reduce(
-        (acc, pred) => {
-          acc[pred.match_id] = pred;
-          return acc;
-        },
-        {} as Record<number, Prediction>,
-      );
-    }
+  if (predictions) {
+    userPredictions = predictions.reduce(
+      (acc, pred) => {
+        acc[pred.match_id] = pred;
+        return acc;
+      },
+      {} as Record<number, Prediction>,
+    );
   }
 
   if (matches?.length === 0) {
