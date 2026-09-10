@@ -1,7 +1,7 @@
-import { createClient } from "@/lib/supabase-server";
-import { Match, Prediction } from "@/types";
-import MatchCard from "@/components/MatchCard";
 import GameweekPicker from "@/components/GameweekPicker";
+import MatchList from "@/components/MatchList";
+import MatchSkeleton from "@/components/MatchSkeleton";
+import { createClient } from "@/lib/supabase-server";
 
 export const dynamic = "force-dynamic";
 
@@ -10,53 +10,34 @@ export default async function Home({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const supabase = await createClient();
-
   const params = await searchParams;
-  const currentGameweek = params.gw ? Number(params.gw) : 1;
+  let currentGameweek: number;
 
-  const userPromise = supabase.auth.getUser();
-  const matchesPromise = supabase
-    .from("matches")
-    .select("*")
-    .eq("gameweek_id", currentGameweek)
-    .order("kick_off", { ascending: true });
+  if (params.gw) {
+    currentGameweek = Number(params.gw);
+  } else {
+    const supabase = await createClient();
+    const now = new Date().toISOString();
 
-  const [
-    {
-      data: { user },
-    },
-    { data: matches, error },
-  ] = await Promise.all([userPromise, matchesPromise]);
+    const { data: upcomingMatch } = await supabase
+      .from("matches")
+      .select("gameweek_id")
+      .gte("kick_off", now)
+      .order("kick_off", { ascending: true })
+      .limit(1)
+      .maybeSingle();
 
-  if (error) {
-    console.error("Kunde inte hämta matcher:", error);
-    return (
-      <div className="p-8 text-red-500 text-center">
-        Kunde inte ladda spelschemat.
-      </div>
-    );
-  }
+    if (upcomingMatch?.gameweek_id) {
+      currentGameweek = upcomingMatch.gameweek_id;
+    } else {
+      const { data: lastMatch } = await supabase
+        .from("matches")
+        .select("gameweek_id")
+        .order("gameweek_id", { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
-  let userPredictions: Record<number, Prediction> = {};
-
-  if (user && matches && matches.length > 0) {
-    const matchIds = matches.map((m) => m.id);
-
-    const { data: predictions } = await supabase
-      .from("predictions")
-      .select("*")
-      .eq("user_id", user.id)
-      .in("match_id", matchIds);
-
-    if (predictions) {
-      userPredictions = predictions.reduce(
-        (acc, pred) => {
-          acc[pred.match_id] = pred;
-          return acc;
-        },
-        {} as Record<number, Prediction>,
-      );
+      currentGameweek = lastMatch?.gameweek_id || 1;
     }
   }
 
@@ -67,24 +48,12 @@ export default async function Home({
           Premier League - Omgång {currentGameweek}
         </h1>
 
-        <GameweekPicker currentGameweek={currentGameweek} />
-
-        <div className="space-y-4">
-          {matches?.length === 0 ? (
-            <div className="text-center text-gray-500 py-10">
-              Inga matcher inlagda för denna omgång.
-            </div>
-          ) : (
-            matches?.map((match: Match) => (
-              <MatchCard
-                key={match.id}
-                match={match}
-                userId={user?.id ?? null}
-                initialPrediction={userPredictions[match.id] ?? null}
-              />
-            ))
-          )}
-        </div>
+        <GameweekPicker
+          currentGameweek={currentGameweek}
+          fallback={<MatchSkeleton />}
+        >
+          <MatchList currentGameweek={currentGameweek} />
+        </GameweekPicker>
       </div>
     </main>
   );
