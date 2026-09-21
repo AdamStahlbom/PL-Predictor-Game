@@ -3,7 +3,6 @@ name: Update Match Results
 on:
   schedule:
     - cron: "17 * * * *"
-
   workflow_dispatch:
 
 jobs:
@@ -11,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ping my Next.js API
-
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
-          curl -X GET "https://www.adamstahlbom.se/api/fetch-matches" \
-          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
+          curl -sS -X GET "https://www.adamstahlbom.se/api/fetch-matches" \
+            -H "Authorization: Bearer $CRON_SECRET"
