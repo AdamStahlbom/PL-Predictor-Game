@@ -16,5 +16,5 @@ jobs:
       - name: Ping my Next.js API
         # Byt ut URL:en nedan mot din faktiska domän
         run: |
-          curl -X GET "https://adamstahlbom.se/api/fetchmatches" \
+          curl -X GET "https://adamstahlbom.se/api/fetch-matches" \
           -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
