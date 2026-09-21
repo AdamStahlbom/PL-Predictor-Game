@@ -4,7 +4,6 @@ on:
   schedule:
     - cron: "17 * * * *"
 
-  # Denna gör att du kan klicka på "Run workflow" manuellt i GitHub om du vill!
   workflow_dispatch:
 
 jobs:
