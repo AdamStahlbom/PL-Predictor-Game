@@ -8,6 +8,8 @@ export interface Match {
   kick_off: string;
   status: string;
   gameweek_id: number;
+  home_score: number | null;
+  away_score: number | null;
 }
 export interface Prediction {
   id?: number;

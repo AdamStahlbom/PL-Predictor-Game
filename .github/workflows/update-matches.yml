@@ -1,0 +1,20 @@
+name: Update Match Results
+
+on:
+  schedule:
+    # Körs varje heltimme (ex: 14:00, 15:00, 16:00)
+    # Vill du köra varje halvtimme, ändra till: "*/30 * * * *"
+    - cron: "0 * * * *"
+
+  # Denna gör att du kan klicka på "Run workflow" manuellt i GitHub om du vill!
+  workflow_dispatch:
+
+jobs:
+  ping-api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping my Next.js API
+        # Byt ut URL:en nedan mot din faktiska domän
+        run: |
+          curl -X GET "https://adamstahlbom.se/api/fetchmatches" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"

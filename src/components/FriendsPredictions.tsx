@@ -16,6 +16,7 @@ interface FriendPrediction {
 interface FriendsPredictionsProps {
   matchId: number;
   hasStarted: boolean;
+  correctOutcome?: "1" | "X" | "2" | null;
 }
 
 const getFallbackAvatar = (name: string, id: string = "1") => {
@@ -38,6 +39,7 @@ const getFallbackAvatar = (name: string, id: string = "1") => {
 export default function FriendsPredictions({
   matchId,
   hasStarted,
+  correctOutcome,
 }: FriendsPredictionsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [friendsPredictions, setFriendsPredictions] = useState<
@@ -124,7 +126,15 @@ export default function FriendsPredictions({
                     </div>
 
                     {hasStarted ? (
-                      <span className="font-bold text-sm bg-blue-50 border border-blue-100 text-blue-700 px-3 py-1 rounded-lg">
+                      <span
+                        className={`font-bold text-sm border px-3 py-1 rounded-lg ${
+                          correctOutcome
+                            ? pred.outcome === correctOutcome
+                              ? "bg-emerald-100 border-emerald-200 text-emerald-700"
+                              : "bg-red-100 border-red-200 text-red-700"
+                            : "bg-blue-50 border-blue-100 text-blue-700"
+                        }`}
+                      >
                         {pred.outcome}
                       </span>
                     ) : (
